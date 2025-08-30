@@ -1,0 +1,27 @@
+
+input[type="text"].constellation-settings {
+    border: none;
+    background: lightgrey;
+    min-width: 0.6em;
+    display: inline-block;
+    margin-left: 0.2em;
+    margin-right: 0.2em;
+    width: 2em;
+    text-align: center;
+}
+
+.setting-visibility-toggle {
+    cursor: pointer;
+}
+
+*[data-setting-hidden="1"] .fade-on-hide {
+    opacity: 50%;
+}
+
+*[data-setting-hidden="1"] .disappear-on-hide {
+    display: none;
+}
+
+canvas#table-root {
+    border: 1px black solid;
+}

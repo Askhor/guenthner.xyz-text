@@ -1,0 +1,10 @@
+.random-math-field {
+    cursor: pointer;
+    /*interpolate-size: allow-keywords;*/
+    /*transition: width 1s;*/
+    /*width: fit-content;*/
+    /*text-overflow: ellipsis;*/
+    /*white-space: nowrap;*/
+    /*overflow: clip;*/
+    /*display: inline-block;*/
+}

@@ -1,0 +1,5 @@
+img {
+    width: max(20vw, 300px);
+    margin: auto auto 2em;
+    display: block;
+}
