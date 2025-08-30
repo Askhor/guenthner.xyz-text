@@ -1,0 +1,3 @@
+User-Agent: *
+Allow: /
+Sitemap: https://guenthner.xyz/sitemap.xml
