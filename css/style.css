@@ -1,0 +1,49 @@
+:root {
+    --outer-bg-color: rgb(192, 225, 255);
+    --bg-color: rgb(35, 52, 126);
+    --inner-bg-color: rgb(230, 230, 251);
+}
+
+h1 {
+    margin-top: 30px;
+    margin-bottom: 40px;
+}
+
+main {
+    max-width: calc(min(800px, 100vw - var(--container-width)));
+    margin: auto;
+}
+
+#main-container-container {
+    --container-width: 30px;
+    width: 100vw;
+    left: 0;
+    /*left: var(--container-width);*/
+    position: absolute;
+    background: transparent;
+}
+
+#main-container {
+    width: 100vw;
+    /*left: var(--container-width);*/
+    /*position: relative;*/
+    background: white;
+}
+
+.phantom-footer {
+    width: 100%;
+    height: calc(20px + 2em);
+    background: transparent;
+}
+
+footer {
+    color: #444;
+    background-color: #eee;
+    text-align: center;
+    padding: 10px;
+    left: 0;
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+    z-index: -100;
+}
