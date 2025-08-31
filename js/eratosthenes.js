@@ -7,8 +7,8 @@ let create_table_button = null;
 let constellation_settings_container = null;
 let constellation_settings = null;
 let number_info_element = null;
-const checked_numbers = new Set();
-const rchecked_numbers = new Set();
+const checked_numbers = new Set(); // checked w lmb
+const rchecked_numbers = new Set(); // checked w rmb
 let current_render_id = 0;
 let current_mouse_x = 0; // These values are for cells
 let current_mouse_y = 0;
@@ -94,16 +94,17 @@ async function render(render_id) {
     const width = table_root.width / cell_size
     const height = table_root.height / cell_size
 
-    const colors = new Array(width * height)
-    const null_color = "white"
+    const colors = new Array(width * height) // the colors to be rendered
+    const null_color = "white" // default is white
     colors.fill(null_color)
-    colors[0] = "darkgrey"
+    colors[0] = "darkgrey" // 0 and 1 are both colored grey
     colors[1] = "darkgrey"
 
     const constellation = get_constellation()
 
+    // force means overwrite any color, otherwise only write if empty
     function try_mark(number, color, force) {
-        const values = constellation(number)
+        const values = constellation(number) // the values the constellation specifies for this number
         for (const index in values) {
             if (force || colors[values[index]] === null_color) {
                 colors[values[index]] = color
@@ -113,25 +114,25 @@ async function render(render_id) {
 
 
     for (let i = 0; i < checked_numbers_lst.length; i++) {
-        const _prime_ = checked_numbers_lst[i]
+        const _prime_ = checked_numbers_lst[i] // the number the user 'considers' to be 'prime'
 
         for (let int = 2 * _prime_; int < colors.length; int += _prime_) {
             if (rchecked_numbers.has(_prime_)) {
-                try_mark(int, "#bbb", true);
+                try_mark(int, "#bbb", true); // multiples of rmb checked numbers are grey (distinguish from others)
             } else {
-                try_mark(int, color_for_number(i), false);
+                try_mark(int, color_for_number(i), false); // otherwise multiples get marked
             }
         }
     }
-
 
     ctxt.strokeStyle = "black"
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
             if (render_id !== current_render_id) return
             const int = x + y * width
+
             if (rchecked_numbers.has(int)) {
-                ctxt.fillStyle = (int % 2 === 0) ? "#777" :"#000";
+                ctxt.fillStyle = (int % 2 === 0) ? "#777" :"#000"; // rmb checked numbers are grey/black depending on parity
             } else {
                 ctxt.fillStyle = colors[int];
             }
@@ -149,15 +150,15 @@ async function render(render_id) {
     ctxt.textAlign = "center"
     ctxt.font = `${cell_size}px serif`
     for (let i = 0; i < checked_numbers_lst.length; i++) {
-        const _prime_ = checked_numbers_lst[i];
+        const _prime_ = checked_numbers_lst[i]; // the number the user 'considers' the number 'prime'
         const start_x = (_prime_ % width) * cell_size;
         const start_y = Math.floor(_prime_ / width) * cell_size;
         const half_size = cell_size / 2;
 
         if (rchecked_numbers.has(_prime_)) {
-            ctxt.fillStyle = "white";
+            ctxt.fillStyle = "white"; // white text on black bg
         } else {
-            ctxt.fillStyle = "black";
+            ctxt.fillStyle = "black"; // black text on white bg
         }
         ctxt.fillText(_prime_.toString(), start_x + half_size, start_y + cell_size)
     }
