@@ -5,17 +5,18 @@ let reload_button = null;
 let scroll_button = null;
 
 function onSubmit(event) {
-    event.preventDefault()
+    event.preventDefault();
+    let data = new FormData(message_form);
+    data.set("FROM_JS", "true");
 
     fetch(message_form.action, {
         "method": "POST",
-        "body": new FormData(message_form)
+        "body": data
     }).then(r => {
-        console.log("Sent message with response:", r)
         if (r.status === 200) {
             location.reload()
             message_element.value = ""
-        } else if (r.status === 503) {
+        } else if (r.status === 400) {
             r.text().then((value) => {
                 error_output.textContent = value
             })
