@@ -7,7 +7,7 @@ let scroll_button = null;
 function onSubmit(event) {
     event.preventDefault()
 
-    fetch("https://guenthner.xyz/creations/chat", {
+    fetch(message_form.action, {
         "method": "POST",
         "body": new FormData(message_form)
     }).then(r => {
