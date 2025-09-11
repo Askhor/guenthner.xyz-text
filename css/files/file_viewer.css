@@ -1,0 +1,75 @@
+#file-view-container {
+    margin: 3vw;
+}
+
+table#file-view {
+    border-collapse: collapse;
+    display: inline-block;
+    margin: 20px;
+}
+
+#file-drop-area {
+    background: white;
+    width: 10vw;
+    min-height: 10vw;
+    align-content: center;
+    text-align: center;
+    padding: 20px;
+    border: 7px solid darkgray;
+    border-radius: 15px;
+}
+
+#file-view th, #file-view td {
+    padding: 10px;
+}
+
+#file-view tr:nth-child(odd) {
+    background-color: #EEEEEE;
+}
+
+#file-view tr:nth-child(even) {
+    background-color: #E4E4E4;
+}
+
+#file-view tr:nth-child(odd)[data-selected="true"] {
+    background-color: #CCCCFF;
+}
+
+#file-view tr:nth-child(even)[data-selected="true"] {
+    background-color: #C3C3FF;
+}
+
+#file-view thead tr {
+    background-color: #111 !important;
+    color: white;
+}
+
+.icon {
+    font-size: larger;
+    width: 1em;
+    height: 1em;
+}
+
+#file-view th.thin-row {
+    padding: 0;
+    margin: 0;
+}
+
+button.directory-action {
+    border-radius: 0;
+    border: white 2px solid;
+    background-color: black;
+    color: white;
+}
+
+button.directory-action:hover {
+    background-color: #666;
+}
+
+#error-msg {
+    color: #800;
+}
+
+.file-action {
+    margin: 5px;
+}
