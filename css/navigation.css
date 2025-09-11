@@ -14,13 +14,21 @@ div.navigation a {
     margin-right: 0.7em;
 }
 
-.navigation a {
+.navigation a, .navigation button {
+    background: none;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
     text-decoration: none;
     color: black;
     padding: 2px;
     border: 2px black solid;
     border-radius: 4px;
     display: inline-block;
+}
+
+.navigation button:hover {
+    text-decoration: underline;
 }
 
 ul.navigation a:hover {
