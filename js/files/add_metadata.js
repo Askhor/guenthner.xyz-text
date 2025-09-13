@@ -27,24 +27,32 @@ function set_icon(mime, path, element) {
         element.appendChild(new_element("img", img => {
             img.classList.add("icon");
             img.loading = "lazy";
-            img.src = api_url("raw", path);
+            img.src = api_url("icon", path);
         }));
     }
 }
 
 async function add_metadata() {
     for (const file of files) {
-        let response = await fetch(api_url("info", file));
-        let json = await response.json();
-        let base64 = json["ascii key"];
-        let icon = document.getElementById("icon-" + base64);
-        let type = document.getElementById("type-" + base64);
-        let size = document.getElementById("size-" + base64);
+        try {
+            let response = await fetch(api_url("info", file));
+            let json = await response.json();
+            let base64 = json["ascii key"];
+            let icon = document.getElementById("icon-" + base64);
+            let type = document.getElementById("type-" + base64);
+            let size = document.getElementById("size-" + base64);
 
-        set_icon(json["mime"], json["path"], icon);
-        type.textContent = json["mime"];
-        size.textContent = get_file_size_human(json["size"]);
-        size.style.textAlign = "right";
+            if (icon === null || type === null || size === null) {
+                console.log(file, base64);
+            }
+
+            set_icon(json["mime"], json["path"], icon);
+            type.textContent = json["mime"];
+            size.textContent = get_file_size_human(json["size"]);
+            size.style.textAlign = "right";
+        } catch (e) {
+            console.log(e);
+        }
     }
 }
 
