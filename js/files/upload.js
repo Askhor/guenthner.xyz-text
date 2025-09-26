@@ -114,6 +114,7 @@ async function upload(file) {
     if (await test_file_exists(path)) return;
 
     const status = upload_status(file.name, current_path, total_packets);
+    const packets = {};
 
     for (let size = file.size; size > 0; size -= net_block_size) {
         const start = file.size - size;
@@ -121,7 +122,7 @@ async function upload(file) {
         const blob = file.slice(start, start + length);
         const hash = await getChecksumSha256(blob);
 
-        status.packets[hash] = Alpine.reactive({
+        packets[hash] = Alpine.reactive({
             blob: blob,
             hash: hash,
             status: "PENDING",
@@ -142,9 +143,10 @@ async function upload(file) {
                         return "red";
                 }
             }
-        })
-        ;
+        });
     }
+
+    status.packets = packets;
 
     await upload_ledger(path, status);
 }
@@ -155,6 +157,6 @@ async function upload_files_from(input) {
     }
 
     for (const file of input.files) {
-        setTimeout(()=>upload(file), 0);
+        setTimeout(() => upload(file), 0);
     }
 }
