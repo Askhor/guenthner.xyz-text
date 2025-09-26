@@ -83,6 +83,7 @@ async function upload_ledger(path, status) {
         if (response.status === 200) return;
     } else {
         console.log("Error " + response.status + " on " + path);
+        return;
     }
 
     setTimeout(() => upload_ledger(path, status), upload_retry_interval);
