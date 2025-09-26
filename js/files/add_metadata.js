@@ -1,10 +1,8 @@
-const image_mime_re = new RegExp("image/.*");
+"use strict";
 
-function new_element(type, init) {
-    const el = document.createElement(type);
-    init(el);
-    return el
-}
+const image_mime_re = new RegExp("image/.*");
+const text_mime_re = new RegExp("text/.*");
+
 
 function get_file_size_human(bytes) {
     let level = 0;
@@ -17,43 +15,29 @@ function get_file_size_human(bytes) {
     return `${Math.round(bytes * 100) / 100}${endings.charAt(level)}`;
 }
 
-function set_icon(mime, path, element) {
-    if (mime === "text/plain") {
-        element.appendChild(new_element("span", span => {
-            span.classList.add("icon");
-            span.textContent = "📄";
-        }));
+function get_icon(mime, path) {
+    if (mime === "inode/directory") {
+        return "<span class=\"icon\">📁</span>";
+    } else if (text_mime_re.test(mime)) {
+        return `<span class="icon">📄</span>`;
     } else if (image_mime_re.test(mime)) {
-        element.appendChild(new_element("img", img => {
-            img.classList.add("icon");
-            img.loading = "lazy";
-            img.src = api_url("icon", path);
-        }));
+        return `<img alt="" class="icon" loading="lazy" src="${api_url("icon", path)}">`;
+    } else {
+        return "";
     }
 }
 
-async function add_metadata() {
-    for (const file of files) {
-        try {
-            let response = await fetch(api_url("info", file));
-            let json = await response.json();
-            let base64 = json["ascii key"];
-            let icon = document.getElementById("icon-" + base64);
-            let type = document.getElementById("type-" + base64);
-            let size = document.getElementById("size-" + base64);
+async function add_metadata(file) {
+    const response = await fetch(api_url("info", file.path));
 
-            if (icon === null || type === null || size === null) {
-                console.log(file, base64);
-            }
-
-            set_icon(json["mime"], json["path"], icon);
-            type.textContent = json["mime"];
-            size.textContent = get_file_size_human(json["size"]);
-            size.style.textAlign = "right";
-        } catch (e) {
-            console.log(e);
-        }
+    if (response.status === 200) {
+        const json = await response.json();
+        file.icon = get_icon(json["mime"], file.path);
+        file.type = json["mime"];
+        file.size = get_file_size_human(json["size"]);
+    } else {
+        // retry after 1 sec
+        console.log(`Loading file metadata failed for ${file.name}; Retrying in 1 second`);
+        setTimeout(() => add_metadata(file), 1000);
     }
 }
-
-setTimeout(add_metadata, 0);

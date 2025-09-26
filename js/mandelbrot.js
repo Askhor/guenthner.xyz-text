@@ -5,7 +5,7 @@ download_button.onclick = download_graphic
 
 function download_graphic() {
     onWindowResize(true)
-    canvas.toBlob((image)=>{
+    canvas.toBlob((image) => {
         const link = document.createElement("a")
         link.download = "Mandelbrot"
         link.href = URL.createObjectURL(image)
@@ -359,7 +359,7 @@ function loadShader(gl, type, source) {
 
 let lastRedraw = Date.now()
 
-function onWindowResize(high_res_render=false) {
+function onWindowResize(high_res_render = false) {
     const time = Date.now()
     const delta = (time - lastRedraw) / 1000.0;
     lastRedraw = time;
@@ -371,7 +371,7 @@ function onWindowResize(high_res_render=false) {
     if (high_res_render) {
         const scale = height / width;
         width = 4000;
-        height =  scale * width;
+        height = scale * width;
     }
     canvas.width = width;
     canvas.height = height;

@@ -1,10 +1,11 @@
-
 function client_name_button() {
     return document.getElementById("client-name-button")
 }
+
 function client_name_field() {
     return document.getElementById("client-name-field")
 }
+
 function getCookie(name) {
     let cookie = document.cookie.split(";")
         .find(string => string.trim().startsWith(name))
@@ -15,6 +16,7 @@ function getCookie(name) {
 
     return decodeURIComponent(cookie.split("=")[1].trim())
 }
+
 function client_name_button_press(event) {
     client_name_button().style.display = "none"
     client_name_field().style.display = "inline"

@@ -75,6 +75,7 @@ function get_constellation() {
         return list
     }
 }
+
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -132,7 +133,7 @@ async function render(render_id) {
             const int = x + y * width
 
             if (rchecked_numbers.has(int)) {
-                ctxt.fillStyle = (int % 2 === 0) ? "#777" :"#000"; // rmb checked numbers are grey/black depending on parity
+                ctxt.fillStyle = (int % 2 === 0) ? "#777" : "#000"; // rmb checked numbers are grey/black depending on parity
             } else {
                 ctxt.fillStyle = colors[int];
             }

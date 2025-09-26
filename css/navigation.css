@@ -3,12 +3,12 @@ ul.navigation li {
     margin-bottom: 9px;
 }
 
-div.navigation {
+/*div.navigation {
     position: absolute;
     left: 0.5em;
     top: 0.5em;
     z-index: 1;
-}
+}*/
 
 div.navigation a {
     margin-right: 0.7em;

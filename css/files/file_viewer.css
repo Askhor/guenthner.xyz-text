@@ -1,45 +1,80 @@
-#file-view-container {
+.hidden {
+    display: none !important;
+}
+
+#file_view {
     margin: 3vw;
 }
 
-table#file-view {
-    border-collapse: collapse;
-    display: inline-block;
-    margin: 20px;
-}
-
-#file-drop-area {
+button.tab {
+    border: 1px grey solid;
+    border-radius: 0;
     background: white;
-    width: 10vw;
-    min-height: 10vw;
-    align-content: center;
-    text-align: center;
-    padding: 20px;
-    border: 7px solid darkgray;
-    border-radius: 15px;
 }
 
-#file-view th, #file-view td {
+button.tab.selected {
+    background: lightgrey;
+}
+
+#upload_container > * {
+    display: block;
+}
+
+#file_input_container {
+    border: 2px solid black;
     padding: 10px;
 }
 
-#file-view tr:nth-child(odd) {
+#status_messages {
+    border: 2px solid black;
+    margin-top: 20px;
+}
+
+.status-message {
+    border: 1px grey solid;
+    margin: 10px;
+    padding: 5px;
+}
+
+#file_view_container {
+    padding: 10px;
+    margin-top: 20px;
+    border: 2px solid black;
+}
+
+table#file_view {
+    border-collapse: collapse;
+    display: table;
+    margin: 20px;
+    border: 2px solid black;
+}
+
+#file_view_container {
+    display: flex;
+    justify-content: center;
+}
+
+#file_view th, #file_view td {
+    padding: 10px;
+}
+
+.alternate-container .alternate:nth-child(odd) {
     background-color: #EEEEEE;
 }
 
-#file-view tr:nth-child(even) {
+.alternate-container .alternate:nth-child(even) {
     background-color: #E4E4E4;
 }
 
-#file-view tr:nth-child(odd)[data-selected="true"] {
+#file_view tr:nth-child(odd)[data-selected="true"] {
     background-color: #CCCCFF;
 }
 
-#file-view tr:nth-child(even)[data-selected="true"] {
+#file_view tr:nth-child(even)[data-selected="true"] {
     background-color: #C3C3FF;
 }
 
-#file-view thead tr {
+#file_view thead tr {
     background-color: #111 !important;
     color: white;
 }
@@ -50,7 +85,7 @@ table#file-view {
     height: 1em;
 }
 
-#file-view th.thin-row {
+#file_view th.thin-row {
     padding: 0;
     margin: 0;
 }
@@ -66,10 +101,15 @@ button.directory-action:hover {
     background-color: #666;
 }
 
-#error-msg {
-    color: #800;
-}
-
 .file-action {
     margin: 5px;
+}
+
+.dot {
+    margin: 5px;
+    height: 15px;
+    width: 15px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
 }

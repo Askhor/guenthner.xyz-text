@@ -20,7 +20,7 @@ const mathematical_fields = [
     ["∞-categories", true],
     ["contact topology", false],
     ["Goldbach conjecture", false],
-    ["LBA problem",false],
+    ["LBA problem", false],
     ["P vs NP problem", false]]
 
 function get_random_math_field(singular, plural) {
