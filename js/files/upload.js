@@ -22,6 +22,7 @@ function upload_status(name, path, total_packets) {
         completed_packets: 0,
         total_packets: total_packets,
         packets: Alpine.reactive({}),
+        complete: false,
 
         get progress() {
             return this.completed_packets / this.total_packets;
@@ -31,6 +32,11 @@ function upload_status(name, path, total_packets) {
         },
         get packet_hashes() {
             return Object.keys(this.packets);
+        },
+        get finalisation_msg() {
+            if (this.complete) return "Done.";
+            if (this.progress >= 1) return "Finalising.";
+            return "";
         }
     });
     Alpine.store("status").push({type: "upload", upload: upload});
@@ -70,15 +76,19 @@ async function upload_ledger(path, status) {
             "x-csrftoken": csrf_token
         }
     })
+    const promises = [];
     if (response.status === 200 || response.status === 202) {
-        if (response.status === 200)
+        if (response.status === 200) {
             console.log("Successfully uploaded file to " + path);
+            status.complete = true;
+        }
 
         const json = await response.json();
         for (const [hash, new_status] of Object.entries(json)) {
             status.packets[hash].set_status(new_status);
-            if (new_status !== "STORED")
-                await upload_packet(hash, status.packets[hash]);
+            if (new_status !== "STORED") {
+                promises.push(upload_packet(hash, status.packets[hash]));
+            }
         }
         if (response.status === 200) return;
     } else {
@@ -86,12 +96,19 @@ async function upload_ledger(path, status) {
         return;
     }
 
+    for (const p of promises) {
+        await p;
+    }
+
     setTimeout(() => upload_ledger(path, status), upload_retry_interval);
 }
 
 async function test_file_exists(path) {
     const response = await fetch(api_url("info", path), {
-        method: "HEAD"
+        method: "HEAD",
+        headers: {
+            "pragma": "no-cache"
+        }
     });
 
     switch (response.status) {
@@ -146,7 +163,7 @@ async function upload(file) {
         });
     }
 
-    status.packets = packets;
+    status.packets = Alpine.reactive(packets);
 
     await upload_ledger(path, status);
 }
