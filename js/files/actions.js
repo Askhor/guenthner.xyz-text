@@ -80,9 +80,11 @@ async function move_files() {
         promises.push(move_file(file, dst + "/" + file.name));
     }
 
-    for (const p of promises) await p;
+    let success = true;
 
-    location.reload();
+    for (const p of promises) success &= await p;
+
+    if (success) location.reload();
 }
 
 async function delete_files() {
@@ -94,7 +96,9 @@ async function delete_files() {
         promises.push(move_file(file, ".trash" + "/" + file.path));
     }
 
-    for (const p of promises) await p;
+    let success = true;
 
-    location.reload();
+    for (const p of promises) success &= await p;
+
+    if (success) location.reload();
 }
