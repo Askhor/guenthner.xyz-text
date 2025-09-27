@@ -1,6 +1,7 @@
 "use strict";
 
 const upload_retry_interval = 1000;
+const max_requests = 10;
 
 const percentage = new Intl.NumberFormat('default', {
     style: 'percent',
@@ -87,6 +88,8 @@ async function upload_ledger(path, status) {
         for (const [hash, new_status] of Object.entries(json)) {
             status.packets[hash].set_status(new_status);
             if (new_status !== "STORED") {
+                while (promises.length >= max_requests)
+                    await promises.pop();
                 promises.push(upload_packet(hash, status.packets[hash]));
             }
         }
