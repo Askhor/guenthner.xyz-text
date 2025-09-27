@@ -9,8 +9,7 @@ const percentage = new Intl.NumberFormat('default', {
     maximumFractionDigits: 2,
 });
 
-plain_status("Or drag files here to upload (not yet though)");
-plain_status("Further status messages will also appear here");
+plain_status("System status messages will appear here");
 
 function plain_status(msg) {
     Alpine.store("status").push({type: "plain", content: msg});

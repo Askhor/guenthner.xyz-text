@@ -6,16 +6,6 @@
     margin: 3vw;
 }
 
-button.tab {
-    border: 1px grey solid;
-    border-radius: 0;
-    background: white;
-}
-
-button.tab.selected {
-    background: lightgrey;
-}
-
 #upload_container > * {
     display: block;
 }
@@ -90,21 +80,6 @@ table#file_view {
     margin: 0;
 }
 
-button.directory-action {
-    border-radius: 0;
-    border: white 2px solid;
-    background-color: black;
-    color: white;
-}
-
-button.directory-action:hover {
-    background-color: #666;
-}
-
-.file-action {
-    margin: 5px;
-}
-
 .dot {
     margin: 1px;
     height: 10px;
@@ -116,4 +91,23 @@ button.directory-action:hover {
 thead {
     position: sticky;
     top: 0;
+}
+
+button.custom-button {
+    border: 2px black solid;
+    border-radius: 0;
+    background: white;
+    cursor: pointer;
+}
+
+button.custom-button.selected {
+    background: #DDD;
+}
+
+input:hover {
+    cursor: pointer;
+}
+
+button.custom-button:hover {
+    background-color: #BBB;
 }
