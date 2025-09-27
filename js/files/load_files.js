@@ -3,6 +3,7 @@
 async function load_file(name, path) {
     const files = Alpine.store("files")
     const file = Alpine.reactive({
+        selected: false,
         name: name,
         path: path,
         icon: "",

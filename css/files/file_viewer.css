@@ -66,12 +66,12 @@ table#file_view {
     background-color: #E4E4E4;
 }
 
-#file_view tr:nth-child(odd)[data-selected="true"] {
-    background-color: #CCCCFF;
+#file_view tr:nth-child(odd).selected {
+    background-color: #CCF;
 }
 
-#file_view tr:nth-child(even)[data-selected="true"] {
-    background-color: #C3C3FF;
+#file_view tr:nth-child(even).selected {
+    background-color: #BBF;
 }
 
 #file_view thead tr {
@@ -111,4 +111,9 @@ button.directory-action:hover {
     width: 10px;
     background-color: #bbb;
     border-radius: 40%;
+}
+
+thead {
+    position: sticky;
+    top: 0;
 }
