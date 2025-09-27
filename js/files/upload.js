@@ -1,7 +1,7 @@
 "use strict";
 
 const upload_retry_interval = 1000;
-const max_requests = 10;
+const max_requests = 20;
 
 const percentage = new Intl.NumberFormat('default', {
     style: 'percent',
