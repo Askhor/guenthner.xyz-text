@@ -10,7 +10,7 @@ async function load_file(name, path) {
         type: "",
         size: "",
     })
-    files.push(file)
+    files.push(file);
 
     setTimeout(() => add_metadata(file), 0);
 }
@@ -30,4 +30,4 @@ async function load_all_files() {
     }
 }
 
-setTimeout(load_all_files, 0)
+setTimeout(load_all_files, 0);
