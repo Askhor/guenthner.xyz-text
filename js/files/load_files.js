@@ -11,8 +11,6 @@ async function load_file(name, path) {
         size: "",
     })
     files.push(file);
-
-    setTimeout(() => add_metadata(file), 0);
 }
 
 async function load_all_files() {
@@ -23,6 +21,8 @@ async function load_all_files() {
         for (const [name, path] of Object.entries(json)) {
             await load_file(name, path);
         }
+
+        document.dispatchEvent(new CustomEvent("files_loaded"))
     } else {
         // retry after 1 sec
         console.log(`Loading files failed at ${current_path}; Retrying in 1 second`);

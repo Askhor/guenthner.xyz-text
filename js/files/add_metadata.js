@@ -27,17 +27,24 @@ function get_icon(mime, path) {
     }
 }
 
-async function add_metadata(file) {
-    const response = await fetch(api_url("info", file.path));
+async function add_all_metadata() {
+    const response = await fetch(api_url("info", current_path, "level=1"));
 
     if (response.status === 200) {
         const json = await response.json();
-        file.icon = get_icon(json["mime"], file.path);
-        file.type = json["mime"];
-        file.size = get_file_size_human(json["size"]);
+        for (const file of Alpine.store("files")) {
+            const file_json = json[file.path];
+            file.icon = get_icon(file_json["mime"], file.path);
+            file.type = file_json["mime"];
+            file.size = get_file_size_human(file_json["size"]);
+        }
+
+        document.dispatchEvent(new CustomEvent("metadata_loaded"))
     } else {
         // retry after 1 sec
-        console.log(`Loading file metadata failed for ${file.name}; Retrying in 1 second`);
-        setTimeout(() => add_metadata(file), 1000);
+        console.log(`Loading file metadata failed at ${current_path}; Retrying in 1 second`);
+        setTimeout(add_all_metadata, 1000);
     }
 }
+
+document.addEventListener("files_loaded", add_all_metadata)

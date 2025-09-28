@@ -87,12 +87,13 @@ async function move_files() {
     if (success) location.reload();
 }
 
-async function delete_files() {
-    const selection = Alpine.store("files").filter(f => f.selected);
+async function delete_files(files = null) {
+    if (files === null)
+        files = Alpine.store("files").filter(f => f.selected);
 
     const promises = [];
 
-    for (const file of selection) {
+    for (const file of files) {
         promises.push(move_file(file, ".trash" + "/" + file.path));
     }
 
