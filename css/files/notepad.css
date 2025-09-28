@@ -1,0 +1,45 @@
+.accessibility-only {
+    display: none;
+}
+
+textarea {
+    width: 100%;
+    height: 90vh;
+    tab-index: -1;
+    resize: none;
+}
+
+
+@keyframes saved_animation {
+    0% {
+        background-color: green;
+        width: 0;
+        color: black;
+    }
+
+    100% {
+        background-color: green;
+        width: calc(100% - 2 * var(--padding));
+        color: white;
+    }
+}
+
+.status-bar {
+    --padding: 10px;
+    margin: var(--padding);
+    height: 1em;
+    background-color: lightblue;
+}
+
+.saved {
+    background: green;
+    animation: linear saved_animation 0.2s forwards;
+}
+
+.editing {
+    background: lightblue;
+}
+
+.error {
+    background: darkred;
+}
