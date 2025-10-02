@@ -81,9 +81,10 @@ table#file_view {
 }
 
 .dot {
+    --dot-size: 0.3cm;
     margin: 1px;
-    height: 10px;
-    width: 10px;
+    height: var(--dot-size);
+    width: var(--dot-size);
     background-color: #bbb;
     border-radius: 40%;
 }

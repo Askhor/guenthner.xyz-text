@@ -1,5 +1,18 @@
 'use strict';
 
+async function file_exists(file) {
+    const response = await fetch(api_url("info", file), {method: "HEAD"});
+
+    switch (response.status) {
+        case 200:
+            return true;
+        case 404:
+            return false;
+        default:
+            return null;
+    }
+}
+
 async function new_something(thing, api) {
     const path = current_path + `/New ${thing}`;
     const response = await fetch(api_url(api, path), {
@@ -87,6 +100,16 @@ async function move_files() {
     if (success) location.reload();
 }
 
+async function move_file_to_trash(file) {
+    let new_file = ".trash" + "/" + file.path;
+
+    while (await file_exists(new_file)) {
+        new_file += "_";
+    }
+
+    await move_file(file, new_file);
+}
+
 async function delete_files(files = null) {
     if (files === null)
         files = Alpine.store("files").filter(f => f.selected);
@@ -94,7 +117,7 @@ async function delete_files(files = null) {
     const promises = [];
 
     for (const file of files) {
-        promises.push(move_file(file, ".trash" + "/" + file.path));
+        promises.push(move_file_to_trash(file));
     }
 
     let success = true;
