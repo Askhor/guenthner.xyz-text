@@ -1,0 +1,22 @@
+table {
+    border-collapse: collapse;
+}
+
+thead {
+    font-weight: bold;
+}
+
+caption {
+    font-weight: bold;
+    caption-side: top;
+    text-align: start;
+}
+
+thead, tbody {
+    background: #EEE;
+}
+
+td {
+    border: 1px solid black;
+    padding: 5px;
+}
