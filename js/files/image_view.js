@@ -11,9 +11,10 @@ async function change(offset) {
 
 async function set_index(use_metadata) {
     let images;
-    if (use_metadata)
+    if (use_metadata) {
         images = get_images()
-    else
+        Alpine.store("true_index", true); // whether the index is true and not just an approx.
+    } else
         images = Alpine.store("files");
 
     let index = 0;
@@ -41,7 +42,6 @@ async function load_exif(to, filename) {
 document.addEventListener("loadexif", (evt) => {
     load_exif(evt.detail.to, evt.detail.name).then();
 });
-load_current_exif()
 
 function plain_status(msg) {
     console.error(msg);
