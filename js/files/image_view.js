@@ -27,6 +27,22 @@ async function set_index(use_metadata) {
     Alpine.store("index", index);
 }
 
+async function load_exif(to, filename) {
+    console.log(`Loading exif metadata for ${filename}`);
+    const response = await fetch(api_url("exif", current_path + "/" + filename));
+    const data = await response.json();
+
+
+    for (const [key, value] of Object.entries(data)) {
+        to[key] = value;
+    }
+}
+
+document.addEventListener("loadexif", (evt) => {
+    load_exif(evt.detail.to, evt.detail.name).then();
+});
+load_current_exif()
+
 function plain_status(msg) {
     console.error(msg);
 }
