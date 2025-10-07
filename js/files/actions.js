@@ -62,7 +62,8 @@ async function move_file(file, path) {
 }
 
 async function rename_file(file) {
-    const new_name = window.prompt(`Rename ${file.name} to:`, file.name);
+    let new_name = window.prompt(`Rename ${file.name} to:`, file.name);
+    if (new_name === null) new_name = file.name;
     const split_index = file.path.lastIndexOf("/");
 
     let new_path;
@@ -125,4 +126,24 @@ async function delete_files(files = null) {
     for (const p of promises) success &= await p;
 
     if (success) location.reload();
+}
+
+async function unzip(file) {
+    const response = await fetch(api_url("unzip", file), {
+        method: "POST",
+        headers: {"x-csrftoken": csrf_token}
+    });
+
+    switch (response.status) {
+        case 200:
+            console.log(`Successfully unzipped ${file}`);
+            break;
+        case 400:
+            const json = await response.json();
+            plain_status(`The following problems were found in the zip file ${file}: ${json.errors}`);
+            break;
+        default:
+            console.log(`Unknown error occurred: ${response.status} at unzipping ${file}`)
+            break;
+    }
 }
