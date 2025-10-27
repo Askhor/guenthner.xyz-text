@@ -1,3 +1,8 @@
+:focus {
+  background: lightblue!important;
+  color: black!important;
+}
+
 :root {
     --outer-bg-color: rgb(192, 225, 255);
     --bg-color: rgb(35, 52, 126);
