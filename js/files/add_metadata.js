@@ -28,7 +28,13 @@ function get_icon(mime, path) {
 }
 
 async function add_all_metadata() {
-    const response = await fetch(api_url("info", current_path, "level=1"));
+    let level = 1;
+
+    /*if (new URLSearchParams(window.location.search).get("include_subdirectories")) {
+        level = 5;
+    }*/
+
+    const response = await fetch(api_url("info", current_path, `level=${level}`));
 
     if (response.status === 200) {
         const json = await response.json();
