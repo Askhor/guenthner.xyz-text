@@ -1,5 +1,98 @@
 'use strict';
 
+class MyGLTexture {
+
+    mygl;
+    #texture_id;
+    #texture;
+
+    constructor(gl) {
+        this.mygl = gl;
+        this.#texture_id = this.mygl.allocate_texture_unit();
+
+        this.#init_texture();
+    }
+
+    #init_texture() {
+        const gl = this.mygl.gl;
+        const defaults = this.#texture_defaults();
+
+        gl.activeTexture(this.#gl_handle());
+        this.#texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, this.#texture);
+        gl.texImage2D(
+            gl.TEXTURE_2D,
+            defaults.level,
+            defaults.internalFormat,
+            1, 1,
+            defaults.border,
+            defaults.srcFormat,
+            defaults.srcType,
+            new Uint8Array([200, 200, 255, 255]),
+        );
+    }
+
+    #gl_handle() {
+        return this.mygl.gl.TEXTURE0 + this.#texture_id;
+    }
+
+    id() {
+        return this.#texture_id
+    }
+
+    static with_source(gl, source) {
+        const texture = new MyGLTexture(gl);
+        texture.write(source);
+        return texture;
+    }
+
+    write(source) {
+        const defaults = this.#texture_defaults();
+        const gl = this.mygl.gl;
+
+        gl.activeTexture(this.#gl_handle());
+        // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.bindTexture(gl.TEXTURE_2D, this.#texture);
+        gl.texImage2D(
+            gl.TEXTURE_2D,
+            defaults.level,
+            defaults.internalFormat,
+            defaults.srcFormat,
+            defaults.srcType,
+            source,
+        );
+
+        // WebGL1 has different requirements for power of 2 images
+        // vs. non power of 2 images so check if the image is a
+        // power of 2 in both dimensions.
+        if (this.isPowerOf2(source.width) && this.isPowerOf2(source.height)) {
+            // Yes, it's a power of 2. Generate mips.
+            gl.generateMipmap(gl.TEXTURE_2D);
+        } else {
+            // No, it's not a power of 2. Turn off mips and set
+            // wrapping to clamp to edge
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        }
+    }
+
+    isPowerOf2(value) {
+        return (value & (value - 1)) === 0;
+    }
+
+    #texture_defaults() {
+        const gl = this.mygl.gl;
+        return {
+            level: 0,
+            border: 0,
+            internalFormat: gl.RGBA,
+            srcFormat: gl.RGBA,
+            srcType: gl.UNSIGNED_BYTE
+        }
+    }
+}
+
 class MyWebGL {
     static #default_source = "void main() {}";
     static #vertex_shader = `
@@ -13,10 +106,11 @@ class MyWebGL {
     #position_buffer = null;
     #source = null;
     #properties = [];
+    #texture_count = 0;
+    last_error = ""
 
     constructor(canvas, source = MyWebGL.#default_source) {
         this.canvas = canvas;
-        this.last_error = "";
 
         this.gl = this.create_gl();
 
@@ -27,6 +121,7 @@ class MyWebGL {
     }
 
     set source(new_source) {
+        this.#texture_count = 0;
         this.#source = new_source;
 
         // Initialize a shader program; this is where all the lighting
@@ -40,10 +135,16 @@ class MyWebGL {
 
     error(msg) {
         this.last_error = msg;
+        console.error(msg);
         throw Error(msg);
     }
 
-    property(name, type, length) {
+    allocate_texture_unit() {
+        return this.#texture_count++;
+    }
+
+
+    property(name, type, length = 1) {
         const obj = {
             my_webgl: this,
             type: type,
@@ -51,7 +152,11 @@ class MyWebGL {
             data: [0, 0].slice(0, length), // array with correct length
             handle: null,
             make_handle() {
-                this.handle = this.my_webgl.gl.getUniformLocation(this.my_webgl.#program, name)
+                const location = this.my_webgl.gl.getUniformLocation(this.my_webgl.#program, name)
+                if (location === null) {
+                    console.log(`The gl variable ${name} does not exist or is unused`);
+                }
+                this.handle = location;
             }
         };
         obj.make_handle();
@@ -155,6 +260,45 @@ class MyWebGL {
         return position;
     }
 
+    #update_property_float(p) {
+        const gl = this.gl;
+        switch (p.length) {
+            case 1:
+                gl.uniform1f(p.handle, p.data[0]);
+                break;
+            case 2:
+                gl.uniform2f(p.handle, p.data[0], p.data[1]);
+                break;
+            default:
+                this.error(`Internal error: Unknown field length ${p.length}`);
+        }
+    }
+
+    #update_property_int(p) {
+        const gl = this.gl;
+        switch (p.length) {
+            case 1:
+                gl.uniform1i(p.handle, p.data[0]);
+                break;
+            case 2:
+                gl.uniform2i(p.handle, p.data[0], p.data[1]);
+                break;
+            default:
+                this.error(`Internal error: Unknown field length ${p.length}`);
+        }
+    }
+
+    #update_property_image(p) {
+        if (p.data[0] === 0) return;
+
+        const gl = this.gl;
+        const location = p.handle;
+        const texture = p.data[0];
+
+        gl.uniform1i(location, texture.id());
+    }
+
+
     render(width = null, height = null) {
         if (document.hidden) return
         if (width === null) width = this.canvas.width;
@@ -169,28 +313,13 @@ class MyWebGL {
         for (const p of this.#properties) {
             switch (p.type) {
                 case "int":
-                    switch (p.length) {
-                        case 1:
-                            gl.uniform1i(p.handle, p.data[0]);
-                            break;
-                        case 2:
-                            gl.uniform2i(p.handle, p.data[0], p.data[1]);
-                            break;
-                        default:
-                            this.error(`Internal error: Unknown field length ${p.length}`);
-                    }
+                    this.#update_property_int(p);
                     break;
                 case "float":
-                    switch (p.length) {
-                        case 1:
-                            gl.uniform1f(p.handle, p.data[0]);
-                            break;
-                        case 2:
-                            gl.uniform2f(p.handle, p.data[0], p.data[1]);
-                            break;
-                        default:
-                            this.error(`Internal error: Unknown field length ${p.length}`);
-                    }
+                    this.#update_property_float(p);
+                    break;
+                case "image":
+                    this.#update_property_image(p);
                     break;
                 default:
                     this.error(`Internal error: Unknown field type ${p.type}`);
