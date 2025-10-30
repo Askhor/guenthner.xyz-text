@@ -43,13 +43,20 @@ class CanvasManager {
         const value = brush.value * 255;
 
         c.strokeStyle = `rgb(${value}, ${value}, ${value})`;
-        c.lineWidth = brush.radius;
-        c.lineCap = "round";
-        c.beginPath();
-        c.moveTo(...a);
-        c.lineTo(...b);
-        c.stroke();
-        c.closePath();
+
+
+        if (brush.radius === 1 && this.#canvas.width < 100) {
+            const [x,y] = b;
+            c.fillRect(Math.floor(x), Math.floor(y), 1, 1);
+        } else {
+            c.lineWidth = brush.radius;
+            c.lineCap = "round";
+            c.beginPath();
+            c.moveTo(...a);
+            c.lineTo(...b);
+            c.stroke();
+            c.closePath();
+        }
 
         document.dispatchEvent(new CustomEvent("canvas_draw"))
     }
