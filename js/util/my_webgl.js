@@ -307,7 +307,7 @@ class MyWebGL {
         const gl = this.gl;
 
         gl.useProgram(this.#program);
-        gl.viewport(0, 0, width, height)
+        gl.viewport(0, 0, width, height);
 
 
         for (const p of this.#properties) {

@@ -1,0 +1,88 @@
+'use strict';
+
+const in_ctxt = in_canvas.getContext("2d");
+const kernel_ctxt = kernel_canvas.getContext("2d");
+const kernel_size = 15;
+
+function initialise_canvases() {
+    /////////////////
+    // Main Canvases
+
+    for (const canvas of [in_canvas, out_canvas]) {
+        const width = 200;
+        canvas.width = width;
+        canvas.height = width;
+    }
+
+    const grad = in_ctxt.createLinearGradient(0, 0, in_canvas.width, in_canvas.height);
+    grad.addColorStop(0.5, "black");
+    grad.addColorStop(0.5, "white");
+    in_ctxt.fillStyle = grad;
+    in_ctxt.fillRect(0, 0, in_canvas.width, in_canvas.height)
+
+    ///////////////////
+    // Kernel
+
+    kernel_canvas.width = kernel_size;
+    kernel_canvas.height = kernel_size;
+
+    kernel_ctxt.fillStyle = "rgb(127,127,127)";
+    kernel_ctxt.fillRect(0, 0, kernel_size, kernel_size);
+    kernel_ctxt.fillStyle = "white";
+    kernel_ctxt.fillRect(0, 7, 15, 1);
+}
+
+initialise_canvases();
+
+
+const gl = new MyWebGL(out_canvas, `
+precision highp float;
+uniform vec2 resolution;
+
+uniform sampler2D kernel;
+uniform sampler2D image;
+
+float sample(sampler2D img, ivec2 pos, vec2 size) {
+    vec2 fpos = vec2(pos) / size;
+    fpos = vec2(fpos.x, 1.0 - fpos.y);
+    return texture2D(img, fpos).x;
+}
+
+void main() {
+    ivec2 pos = ivec2(gl_FragCoord);
+    
+    float intensity = 0.0;
+    float weight = 0.0;
+    
+    for (int x = 0; x < 15; x++) {
+        for (int y = 0; y < 15; y++) {
+            ivec2 kpos = ivec2(x,y);
+            // value of kernel at this point
+            float kvalue = (sample(kernel,kpos,vec2(15.0,15.0)) - 0.5) * 2.0;
+            weight += abs(kvalue);
+            intensity += kvalue * sample(image, pos + kpos - ivec2(-7,-7),resolution);
+        }    
+    }
+    
+    intensity /= weight;
+    intensity = intensity;
+    
+    gl_FragColor = vec4(vec3(intensity), 1.0);
+}
+`);
+
+const resolution = gl.property("resolution", "float", 2);
+const image = gl.property("image", "image")
+const kernel = gl.property("kernel", "image")
+
+resolution[0] = out_canvas.width;
+resolution[1] = out_canvas.height;
+image[0] = MyGLTexture.with_source(gl, in_canvas);
+kernel[0] = MyGLTexture.with_source(gl, kernel_canvas);
+gl.render();
+
+document.addEventListener("canvas_draw", () => {
+    image[0].write(in_canvas);
+    kernel[0].write(kernel_canvas);
+    gl.render();
+})
