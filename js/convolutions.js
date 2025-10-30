@@ -14,11 +14,14 @@ function initialise_canvases() {
         canvas.height = width;
     }
 
-    const grad = in_ctxt.createLinearGradient(0, 0, in_canvas.width, in_canvas.height);
-    grad.addColorStop(0.5, "black");
-    grad.addColorStop(0.5, "white");
-    in_ctxt.fillStyle = grad;
-    in_ctxt.fillRect(0, 0, in_canvas.width, in_canvas.height)
+    const width = in_canvas.width;
+    const height = in_canvas.height;
+    for (let x = 0; x < width; x += 20) {
+        for (let y = 0; y < height; y += 20) {
+            in_ctxt.fillStyle = (x + y) % 40 === 0 ? "black" : "white";
+            in_ctxt.fillRect(x, y, width / 2, height / 2);
+        }
+    }
 
     ///////////////////
     // Kernel
@@ -26,10 +29,11 @@ function initialise_canvases() {
     kernel_canvas.width = kernel_size;
     kernel_canvas.height = kernel_size;
 
-    kernel_ctxt.fillStyle = "rgb(127,127,127)";
+    kernel_ctxt.fillStyle = "hsl(0,0%,50%)";
     kernel_ctxt.fillRect(0, 0, kernel_size, kernel_size);
-    kernel_ctxt.fillStyle = "white";
+    kernel_ctxt.fillStyle = "hsl(0,0%,100%)";
     kernel_ctxt.fillRect(0, 7, 15, 1);
+    // kernel_ctxt.fillRect(7, 7, 1, 1);
 }
 
 initialise_canvases();
@@ -42,10 +46,13 @@ uniform vec2 resolution;
 uniform sampler2D kernel;
 uniform sampler2D image;
 
-float sample(sampler2D img, ivec2 pos, vec2 size) {
-    vec2 fpos = vec2(pos) / size;
-    fpos = vec2(fpos.x, 1.0 - fpos.y);
-    return texture2D(img, fpos).x;
+float get_kernel(ivec2 pos) {
+    float value = texture2D(kernel, vec2(pos) / vec2(14.0)).x;
+    return (value - 0.5) * 2.0;
+}
+
+float get_image(ivec2 pos) {
+    return texture2D(image, vec2(pos) / (resolution - vec2(1.0))).x;
 }
 
 void main() {
@@ -58,15 +65,16 @@ void main() {
         for (int y = 0; y < 15; y++) {
             ivec2 kpos = ivec2(x,y);
             // value of kernel at this point
-            float kvalue = (sample(kernel,kpos,vec2(15.0,15.0)) - 0.5) * 2.0;
-            weight += abs(kvalue);
-            intensity += kvalue * sample(image, pos + kpos - ivec2(-7,-7),resolution);
+            float kvalue = get_kernel(kpos);
+            weight += kvalue;
+            intensity += kvalue * get_image(pos + kpos - ivec2(7,7));
         }    
     }
     
-    intensity /= weight;
-    intensity = intensity;
-    
+    if (weight > 1.0) {
+        intensity /= weight;
+    }
+  
     gl_FragColor = vec4(vec3(intensity), 1.0);
 }
 `);

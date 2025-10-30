@@ -42,13 +42,12 @@ class CanvasManager {
         const brush = Alpine.store("brush");
         const value = brush.value * 255;
 
-        c.strokeStyle = `rgb(${value}, ${value}, ${value})`;
-
-
         if (brush.radius === 1 && this.#canvas.width < 100) {
             const [x,y] = b;
+            c.fillStyle = `rgb(${value}, ${value}, ${value})`;
             c.fillRect(Math.floor(x), Math.floor(y), 1, 1);
         } else {
+            c.strokeStyle = `rgb(${value}, ${value}, ${value})`;
             c.lineWidth = brush.radius;
             c.lineCap = "round";
             c.beginPath();
