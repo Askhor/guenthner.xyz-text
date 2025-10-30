@@ -57,6 +57,7 @@ float get_image(ivec2 pos) {
 
 void main() {
     ivec2 pos = ivec2(gl_FragCoord);
+    pos.y = int(resolution.y) - pos.y - 1;
     
     float intensity = 0.0;
     float weight = 0.0;
