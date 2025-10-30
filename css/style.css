@@ -1,6 +1,6 @@
 :focus {
-  background: lightblue!important;
-  color: black!important;
+    background: lightblue !important;
+    color: black !important;
 }
 
 :root {
@@ -14,24 +14,24 @@ h1 {
     margin-bottom: 40px;
 }
 
-main {
+body {
+    --container-width: 30px;
+}
+
+.paper-center {
     max-width: calc(min(800px, 100vw - var(--container-width)));
     margin: auto;
 }
 
 #main-container-container {
-    --container-width: 30px;
     width: 100vw;
     left: 0;
-    /*left: var(--container-width);*/
     position: absolute;
     background: transparent;
 }
 
 #main-container {
     width: 100vw;
-    /*left: var(--container-width);*/
-    /*position: relative;*/
     background: white;
 }
 
